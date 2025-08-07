@@ -68,7 +68,6 @@ export default function Login() {
   }));
 
   const onSubmit = async (data: IForm) => {
-    console.log("Dados recebidos:", data); // Verifica se chegou aqui
     try {
       await signInWithEmailAndPassword(auth, data.email, data.senha);
 
@@ -99,7 +98,13 @@ export default function Login() {
             name="senha"
             label="Senha"
             secureTextEntry
-            rules={{ required: "Senha obrigatória" }}
+            rules={{
+              required: "Senha obrigatória",
+              maxLength: {
+                value: 6,
+                message: "Senha deve ter no máximo 6 caracteres",
+              },
+            }}
           />
           <BytebankButton onPress={handleSubmit(onSubmit)}>
             Entrar

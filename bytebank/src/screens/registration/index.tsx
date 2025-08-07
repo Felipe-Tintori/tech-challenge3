@@ -13,12 +13,20 @@ import styles from "./styles";
 import { globalStyles } from "../../styles/globalSltyles";
 
 import { auth } from "../../services/firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import BytebankSnackbar from "../../shared/components/snackBar";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Routes } from "../../interface/routes";
 
 interface IForm {
   email: string;
   senha: string;
+  name: string;
 }
 
 export default function Registration() {
@@ -26,8 +34,11 @@ export default function Registration() {
     defaultValues: {
       email: "",
       senha: "",
+      name: "",
     },
   });
+
+  const navigation = useNavigation<NativeStackNavigationProp<Routes>>();
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -60,13 +71,16 @@ export default function Registration() {
   }));
 
   const onSubmit = async (data: IForm) => {
-    console.log("Dados recebidos:", data); // Verifica se chegou aqui
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.senha);
-
-      showSnackbar("Login realizado com sucesso!");
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.senha
+      );
+      await updateProfile(userCredential.user, { displayName: data.name });
+      navigation.navigate("Login");
     } catch (error: any) {
-      showSnackbar(error.message || "Erro ao logar.");
+      showSnackbar(error.message || "Erro ao cadastrar.");
     }
   };
 
@@ -82,7 +96,7 @@ export default function Registration() {
         <View style={globalStyles.card}>
           <BytebankInput
             control={control}
-            name="Nome"
+            name="name"
             label="Nome"
             rules={{ required: "Nome obrigatório" }}
           />
@@ -97,7 +111,13 @@ export default function Registration() {
             name="senha"
             label="Senha"
             secureTextEntry
-            rules={{ required: "Senha obrigatória" }}
+            rules={{
+              required: "Senha obrigatória",
+              minLength: {
+                value: 6,
+                message: "Senha deve ter no mínimo 6 caracteres",
+              },
+            }}
           />
           <BytebankButton onPress={handleSubmit(onSubmit)}>
             Entrar
