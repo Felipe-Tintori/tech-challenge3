@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
 import { Text } from "react-native-paper";
 import { useForm } from "react-hook-form";
 import Animated, {
@@ -12,13 +12,30 @@ import BytebankInput from "../../shared/components/input";
 import BytebankButton from "../../shared/components/button";
 import styles from "./styles";
 
+import { auth } from "../../services/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import BytebankSnackbar from "../../shared/components/snackBar";
+
 interface IForm {
   email: string;
   senha: string;
 }
 
 export default function LoginScreen() {
-  const { control, handleSubmit } = useForm<IForm>();
+  const { control, handleSubmit } = useForm<IForm>({
+    defaultValues: {
+      email: "",
+      senha: "",
+    },
+  });
+
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const showSnackbar = (message: string) => {
+    setSnackbarMessage(message);
+    setSnackbarVisible(true);
+  };
 
   const logoTranslateY = useSharedValue(-100);
   const formTranslateY = useSharedValue(100);
@@ -42,8 +59,15 @@ export default function LoginScreen() {
     transform: [{ translateY: formTranslateY.value }],
   }));
 
-  const onSubmit = (data: IForm) => {
-    console.log("Login:", data);
+  const onSubmit = async (data: IForm) => {
+    console.log("Dados recebidos:", data); // Verifica se chegou aqui
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.senha);
+
+      showSnackbar("Login realizado com sucesso!");
+    } catch (error: any) {
+      showSnackbar(error.message || "Erro ao logar.");
+    }
   };
 
   return (
@@ -68,6 +92,11 @@ export default function LoginScreen() {
         />
         <BytebankButton onPress={handleSubmit(onSubmit)}>Entrar</BytebankButton>
       </Animated.View>
+      <BytebankSnackbar
+        visible={snackbarVisible}
+        message={snackbarMessage}
+        onDismiss={() => setSnackbarVisible(false)}
+      />
     </View>
   );
 }
