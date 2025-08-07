@@ -1,6 +1,9 @@
+import { StyleSheet } from "react-native";
+
 export const colors = {
   primary: "#00E280",
   background: "#282828",
+  card: "#303030",
   text: "#111111",
   inputBackground: "#f2f2f2",
   error: "#ff4d4d",
@@ -17,3 +20,18 @@ export const fontSizes = {
   text: 16,
   small: 12,
 };
+
+export const heightFormControl = {
+  default: 40,
+};
+
+export const globalStyles = StyleSheet.create({
+  card: {
+    backgroundColor: colors.card,
+    padding: spacing.medium,
+    gap: spacing.medium,
+    borderRadius: spacing.small,
+    display: "flex",
+    flexDirection: "column",
+  },
+});

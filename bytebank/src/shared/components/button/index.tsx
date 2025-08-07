@@ -1,12 +1,12 @@
 import React from "react";
 import { Button } from "react-native-paper";
+import { styles } from "./styles";
 
 interface BytebankButtonProps {
   onPress: () => void;
   children: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
-  style?: object;
 }
 
 export default function BytebankButton({
@@ -14,7 +14,6 @@ export default function BytebankButton({
   children,
   disabled = false,
   loading = false,
-  style = {},
 }: BytebankButtonProps) {
   return (
     <Button
@@ -22,8 +21,7 @@ export default function BytebankButton({
       onPress={onPress}
       disabled={disabled}
       loading={loading}
-      style={[{ marginTop: 16 }, style]}
-      contentStyle={{ paddingVertical: 6 }}
+      style={styles.button}
     >
       {children}
     </Button>

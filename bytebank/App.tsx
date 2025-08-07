@@ -1,11 +1,11 @@
 import React from "react";
 import { Provider as PaperProvider } from "react-native-paper";
-import LoginScreen from "./src/screens/login/LoginScreen";
+import AppNavigator from "./src/routes/AppNavigator";
 
 export default function App() {
   return (
     <PaperProvider>
-      <LoginScreen />
+      <AppNavigator />
     </PaperProvider>
   );
 }

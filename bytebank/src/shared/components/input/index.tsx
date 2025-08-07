@@ -2,6 +2,7 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { TextInput } from "react-native-paper";
+import { styles } from "./styles";
 
 interface BytebankInputProps {
   control: any;
@@ -33,9 +34,8 @@ export default function BytebankInput({
           onChangeText={onChange}
           onBlur={onBlur}
           secureTextEntry={secureTextEntry}
-          mode="outlined"
           error={!!error}
-          style={{ marginBottom: 16 }}
+          style={styles.input}
         />
       )}
     />

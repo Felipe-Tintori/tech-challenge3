@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { View, Image } from "react-native";
 import { useForm } from "react-hook-form";
 import Animated, {
   useSharedValue,
@@ -11,6 +10,7 @@ import Animated, {
 import BytebankInput from "../../shared/components/input";
 import BytebankButton from "../../shared/components/button";
 import styles from "./styles";
+import { globalStyles } from "../../styles/globalSltyles";
 
 import { auth } from "../../services/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -21,7 +21,7 @@ interface IForm {
   senha: string;
 }
 
-export default function LoginScreen() {
+export default function Registration() {
   const { control, handleSubmit } = useForm<IForm>({
     defaultValues: {
       email: "",
@@ -73,24 +73,36 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Animated.View style={logoStyle}>
-        <Text style={styles.title}>Bytebank</Text>
+        <View style={styles.logoContainer}>
+          <Image source={require("../../../assets/logo.png")} />
+        </View>
       </Animated.View>
 
       <Animated.View style={formStyle}>
-        <BytebankInput
-          control={control}
-          name="email"
-          label="Email"
-          rules={{ required: "Email obrigatório" }}
-        />
-        <BytebankInput
-          control={control}
-          name="senha"
-          label="Senha"
-          secureTextEntry
-          rules={{ required: "Senha obrigatória" }}
-        />
-        <BytebankButton onPress={handleSubmit(onSubmit)}>Entrar</BytebankButton>
+        <View style={globalStyles.card}>
+          <BytebankInput
+            control={control}
+            name="Nome"
+            label="Nome"
+            rules={{ required: "Nome obrigatório" }}
+          />
+          <BytebankInput
+            control={control}
+            name="email"
+            label="Email"
+            rules={{ required: "Email obrigatório" }}
+          />
+          <BytebankInput
+            control={control}
+            name="senha"
+            label="Senha"
+            secureTextEntry
+            rules={{ required: "Senha obrigatória" }}
+          />
+          <BytebankButton onPress={handleSubmit(onSubmit)}>
+            Entrar
+          </BytebankButton>
+        </View>
       </Animated.View>
       <BytebankSnackbar
         visible={snackbarVisible}
