@@ -78,7 +78,7 @@ export default function Login() {
       );
       const token = await userCredential.user.getIdToken();
       await AsyncStorage.setItem(AsyncStorageKeys.FIREBASE_TOKEN, token);
-      showSnackbar("Login realizado com sucesso!");
+      navigation.navigate("Home");
     } catch (error: any) {
       showSnackbar(error.message || "Erro ao logar.");
     }
