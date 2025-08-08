@@ -21,6 +21,8 @@ import {
   NativeStackNavigationProp,
 } from "@react-navigation/native-stack";
 import { Routes } from "../../interface/routes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AsyncStorageKeys } from "../../enum/asyncStorage";
 
 interface IForm {
   email: string;
@@ -69,8 +71,13 @@ export default function Login() {
 
   const onSubmit = async (data: IForm) => {
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.senha);
-
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.senha
+      );
+      const token = await userCredential.user.getIdToken();
+      await AsyncStorage.setItem(AsyncStorageKeys.FIREBASE_TOKEN, token);
       showSnackbar("Login realizado com sucesso!");
     } catch (error: any) {
       showSnackbar(error.message || "Erro ao logar.");
@@ -100,7 +107,7 @@ export default function Login() {
             secureTextEntry
             rules={{
               required: "Senha obrigatória",
-              maxLength: {
+              minLength: {
                 value: 6,
                 message: "Senha deve ter no máximo 6 caracteres",
               },
@@ -112,9 +119,8 @@ export default function Login() {
           <TouchableOpacity onPress={() => navigation.navigate("Registration")}>
             <Text
               style={{
-                color: "blue",
+                color: "#FFF",
                 textDecorationLine: "underline",
-                marginTop: 16,
               }}
             >
               Não tem conta? Cadastre-se

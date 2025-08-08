@@ -1,8 +1,10 @@
 // src/components/FormTextInput.tsx
 import React from "react";
+import { View } from "react-native";
 import { Controller } from "react-hook-form";
 import { HelperText, TextInput } from "react-native-paper";
 import { styles } from "./styles";
+import { colors } from "../../../styles/globalSltyles";
 
 interface BytebankInputProps {
   control: any;
@@ -28,7 +30,7 @@ export default function BytebankInput({
         field: { onChange, onBlur, value },
         fieldState: { error },
       }) => (
-        <>
+        <View>
           <TextInput
             label={label}
             value={value}
@@ -39,11 +41,15 @@ export default function BytebankInput({
             style={styles.input}
           />
           {error && (
-            <HelperText type="error" visible={!!error}>
+            <HelperText
+              type="error"
+              style={{ color: colors.error }}
+              visible={!!error}
+            >
               {error.message}
             </HelperText>
           )}
-        </>
+        </View>
       )}
     />
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Image } from "react-native";
+import { View, Image, TouchableOpacity, Text } from "react-native";
 import { useForm } from "react-hook-form";
 import Animated, {
   useSharedValue,
@@ -120,8 +120,18 @@ export default function Registration() {
             }}
           />
           <BytebankButton onPress={handleSubmit(onSubmit)}>
-            Entrar
+            Cadastrar
           </BytebankButton>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text
+              style={{
+                color: "#FFF",
+                textDecorationLine: "underline",
+              }}
+            >
+              Vá para a tela de login
+            </Text>
+          </TouchableOpacity>
         </View>
       </Animated.View>
       <BytebankSnackbar
