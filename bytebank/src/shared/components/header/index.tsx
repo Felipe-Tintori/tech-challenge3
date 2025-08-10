@@ -1,18 +1,25 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Appbar, Menu } from "react-native-paper";
 import { Image } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import UserContext from "../../../context/UserContext";
-import { onAuthStateChanged } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "../../../services/firebaseConfig";
-import { User } from "../../../interface/user";
+
+import { useNavigator } from "../../../customHook/usenavigator";
 
 export default function BytebankHeader() {
-  const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
+  const _goBack = () => console.log("Went back");
+  const { navigation } = useNavigator();
+
+  const handleLogout = async () => {
+    setMenuVisible(false);
+    await signOut(auth);
+    navigation.navigate("Login");
+  };
 
   return (
     <Appbar.Header>
+      <Appbar.BackAction onPress={_goBack} />
       <Image
         source={require("../../../../assets/logo.png")}
         style={{ width: 40, height: 40, marginLeft: 8 }}
@@ -44,6 +51,7 @@ export default function BytebankHeader() {
           }}
           title="Transferência"
         />
+        <Menu.Item onPress={handleLogout} title="Sair" />
       </Menu>
     </Appbar.Header>
   );

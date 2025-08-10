@@ -13,6 +13,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 32,
   },
+  card: {
+    backgroundColor: "#FFF",
+    padding: spacing.medium,
+    width: "100%",
+    gap: spacing.small,
+    display: "flex",
+    flexDirection: "column",
+  },
 });
 
 export default styles;

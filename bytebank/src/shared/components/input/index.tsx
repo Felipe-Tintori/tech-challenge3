@@ -34,11 +34,12 @@ export default function BytebankInput({
           <TextInput
             label={label}
             value={value}
+            mode="outlined"
+            outlineColor={colors.border}
             onChangeText={onChange}
             onBlur={onBlur}
             secureTextEntry={secureTextEntry}
             error={!!error}
-            style={styles.input}
           />
           {error && (
             <HelperText

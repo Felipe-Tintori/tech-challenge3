@@ -134,11 +134,11 @@ export default function Registration() {
           </TouchableOpacity>
         </View>
       </Animated.View>
-      <BytebankSnackbar
+      {/* <BytebankSnackbar
         visible={snackbarVisible}
         message={snackbarMessage}
         onDismiss={() => setSnackbarVisible(false)}
-      />
+      /> */}
     </View>
   );
 }

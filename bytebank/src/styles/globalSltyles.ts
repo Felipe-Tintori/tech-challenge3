@@ -7,6 +7,7 @@ export const colors = {
   text: "#111111",
   inputBackground: "#f2f2f2",
   error: "#ff4d4d",
+  border: "#ddd",
 };
 
 export const spacing = {

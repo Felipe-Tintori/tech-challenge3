@@ -17,11 +17,11 @@ export default function BytebankButton({
 }: BytebankButtonProps) {
   return (
     <Button
-      mode="contained"
+      mode="contained-tonal"
+      contentStyle={styles.button}
       onPress={onPress}
       disabled={disabled}
       loading={loading}
-      style={styles.button}
     >
       {children}
     </Button>

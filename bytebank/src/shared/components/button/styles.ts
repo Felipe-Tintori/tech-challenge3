@@ -8,7 +8,7 @@ import {
 export const styles = StyleSheet.create({
   button: {
     height: heightFormControl.default,
-    borderRadius: spacing.small,
+    borderRadius: 0,
     backgroundColor: colors.primary,
   },
 });
