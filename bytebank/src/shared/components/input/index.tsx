@@ -12,7 +12,28 @@ interface BytebankInputProps {
   label: string;
   secureTextEntry?: boolean;
   rules?: object;
+  keyboardType?: "default" | "numeric" | "email-address" | "phone-pad";
+  currency?: boolean;
 }
+
+const formatCurrency = (value: string): string => {
+  const cleanValue = value.replace(/\D/g, "");
+
+  if (!cleanValue) return "";
+
+  const numberValue = parseInt(cleanValue) / 100;
+
+  return numberValue.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+};
+
+const parseCurrency = (value: string): string => {
+  const cleanValue = value.replace(/\D/g, "");
+  if (!cleanValue) return "";
+  return (parseInt(cleanValue) / 100).toString();
+};
 
 export default function BytebankInput({
   control,
@@ -20,6 +41,8 @@ export default function BytebankInput({
   label,
   secureTextEntry = false,
   rules = {},
+  keyboardType = "default",
+  currency = false,
 }: BytebankInputProps) {
   return (
     <Controller
@@ -36,10 +59,19 @@ export default function BytebankInput({
             value={value}
             mode="outlined"
             outlineColor={colors.border}
-            onChangeText={onChange}
+            onChangeText={(text) => {
+              if (currency) {
+                // Para currency, salva o valor numérico sem formatação
+                const numericValue = parseCurrency(text);
+                onChange(numericValue);
+              } else {
+                onChange(text);
+              }
+            }}
             onBlur={onBlur}
             secureTextEntry={secureTextEntry}
             error={!!error}
+            keyboardType={currency ? "numeric" : keyboardType}
           />
           {error && (
             <HelperText

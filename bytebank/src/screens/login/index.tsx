@@ -18,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AsyncStorageKeys } from "../../enum/asyncStorage";
 import { typeSnackbar } from "../../enum/snackBar";
 import { useSnackBar } from "../../customHook/useSnackBar";
-import { useNavigator } from "../../customHook/usenavigator";
+import { useNavigator } from "../../customHook/useNavigator";
 
 const { height } = Dimensions.get("window");
 
