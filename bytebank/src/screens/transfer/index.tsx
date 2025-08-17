@@ -11,6 +11,7 @@ import styles from "./styles";
 import { typeSnackbar } from "../../enum/snackBar";
 import { useCategories } from "../../customHook/useCategories";
 import { usePaymentMethods } from "../../customHook/usePaymentMethods";
+import BytebankDatePicker from "../../shared/components/datePicker";
 
 interface TransferProps {
   onClose?: () => void;
@@ -20,6 +21,7 @@ interface ITransferForm {
   categoria: string;
   metodoPagamento: string;
   valor: string;
+  dataTransferencia: string;
 }
 
 export default function Transfer({ onClose }: TransferProps) {
@@ -28,6 +30,7 @@ export default function Transfer({ onClose }: TransferProps) {
       categoria: "",
       metodoPagamento: "",
       valor: "",
+      dataTransferencia: "",
     },
   });
 
@@ -115,6 +118,13 @@ export default function Transfer({ onClose }: TransferProps) {
                   return true;
                 },
               }}
+            />
+
+            <BytebankDatePicker
+              control={control}
+              name="dataTransferencia"
+              label="Data da Transferência"
+              rules={{ required: "Data da transferência é obrigatória" }}
             />
 
             <Button
