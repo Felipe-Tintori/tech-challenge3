@@ -1,8 +1,12 @@
 export interface ITransaction {
   userId: string;
-  categoriesId: string;
-  paymentMethodId: string;
+  category: string;
+  categoryId: string;
+  payment: string;
+  paymentId: string;
   value: number;
-
-  createdAt: string;
+  dataTransaction: string;
+  comprovanteURL?: string | null;
+  createdAt: Date;
+  status: string;
 }
