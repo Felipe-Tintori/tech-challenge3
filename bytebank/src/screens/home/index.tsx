@@ -5,24 +5,14 @@ import Transfer from "../transfer"; // Importe o componente Transfer
 import styles from "./styles";
 import { FAB, Portal } from "react-native-paper";
 import { useTransactions } from "../../context/TransactionContext";
+import Extract from "./components/extract";
 
 export default function Home() {
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const {
-    transactions,
-    loading,
-    error,
-    totalTransactions,
-    totalValue,
-    refreshTransactions,
-  } = useTransactions();
+
   const handleFABPress = () => {
     setDrawerVisible(true);
   };
-  useEffect(() => {
-    // Carregar transações ao montar o componente
-    console.log("Carregando transações...", transactions);
-  }, [transactions]);
 
   const closeDrawer = () => {
     setDrawerVisible(false);
@@ -31,8 +21,8 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <BytebankHeader />
-      <View>
-        <Text>Bem-vindo à Home!</Text>
+      <View style={{ flex: 1 }}>
+        <Extract />
       </View>
       <FAB icon="plus" style={styles.fab} onPress={handleFABPress} />
 
