@@ -1,16 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import BytebankHeader from "../../shared/components/header";
 import Transfer from "../transfer"; // Importe o componente Transfer
 import styles from "./styles";
 import { FAB, Portal } from "react-native-paper";
+import { useTransactions } from "../../context/TransactionContext";
 
 export default function Home() {
   const [drawerVisible, setDrawerVisible] = useState(false);
-
+  const {
+    transactions,
+    loading,
+    error,
+    totalTransactions,
+    totalValue,
+    refreshTransactions,
+  } = useTransactions();
   const handleFABPress = () => {
     setDrawerVisible(true);
   };
+  useEffect(() => {
+    // Carregar transações ao montar o componente
+    console.log("Carregando transações...", transactions);
+  }, [transactions]);
 
   const closeDrawer = () => {
     setDrawerVisible(false);

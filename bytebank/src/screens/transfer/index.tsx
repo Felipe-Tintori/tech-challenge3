@@ -1,8 +1,8 @@
 // No componente Transfer
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, ScrollView } from "react-native";
 import { useForm } from "react-hook-form";
-import { Drawer, Button, IconButton } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import BytebankInput from "../../shared/components/input";
 import BytebankSelect from "../../shared/components/select";
 import BytebankDrawerSection from "../../shared/components/drawer";
@@ -15,7 +15,7 @@ import BytebankDatePicker from "../../shared/components/datePicker";
 import BytebankFileUpload from "../../shared/components/fileUpload";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, db, storage } from "../../services/firebaseConfig";
+import { db, storage } from "../../services/firebaseConfig";
 import { ITransaction } from "../../interface/transaction";
 import BytebankSnackbar from "../../shared/components/snackBar";
 import {
@@ -23,6 +23,7 @@ import {
   IFirebaseStorage,
 } from "../../enum/firebaseCollection";
 import BytebankLoading from "../../shared/components/loading";
+import UserContext from "../../context/UserContext";
 
 interface TransferProps {
   onClose?: () => void;
@@ -38,6 +39,7 @@ interface ITransferForm {
 
 export default function Transfer({ onClose }: TransferProps) {
   const [loadingTransaction, setLoadingTransaction] = useState(false);
+  const userContext = useContext(UserContext);
   const { control, handleSubmit, reset } = useForm<ITransferForm>({
     defaultValues: {
       categoria: "",
@@ -68,10 +70,11 @@ export default function Transfer({ onClose }: TransferProps) {
   const { showSnackBar, visible, message, type, hideSnackBar } = useSnackBar();
 
   const onSubmit = async (data: ITransferForm) => {
+    const currentUser = userContext?.user;
     try {
       setLoadingTransaction(true);
 
-      if (!auth.currentUser) {
+      if (!currentUser) {
         showSnackBar("Usuário não está logado!", typeSnackbar.ERROR);
         return;
       }
@@ -106,7 +109,7 @@ export default function Transfer({ onClose }: TransferProps) {
       );
 
       const transactionData: ITransaction = {
-        userId: auth.currentUser.uid,
+        userId: currentUser?._id,
         category: selectedCategory?.label || data.categoria,
         categoryId: data.categoria,
         payment: selectedPaymentMethod?.label || data.metodoPagamento,
