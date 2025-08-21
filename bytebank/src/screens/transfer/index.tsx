@@ -1,5 +1,5 @@
 // No componente Transfer
-import React from "react";
+import React, { useState } from "react";
 import { View, ScrollView } from "react-native";
 import { useForm } from "react-hook-form";
 import { Drawer, Button, IconButton } from "react-native-paper";
@@ -18,6 +18,11 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../../services/firebaseConfig";
 import { ITransaction } from "../../interface/transaction";
 import BytebankSnackbar from "../../shared/components/snackBar";
+import {
+  IFirebaseCollection,
+  IFirebaseStorage,
+} from "../../enum/firebaseCollection";
+import BytebankLoading from "../../shared/components/loading";
 
 interface TransferProps {
   onClose?: () => void;
@@ -32,6 +37,7 @@ interface ITransferForm {
 }
 
 export default function Transfer({ onClose }: TransferProps) {
+  const [loadingTransaction, setLoadingTransaction] = useState(false);
   const { control, handleSubmit, reset } = useForm<ITransferForm>({
     defaultValues: {
       categoria: "",
@@ -63,10 +69,8 @@ export default function Transfer({ onClose }: TransferProps) {
 
   const onSubmit = async (data: ITransferForm) => {
     try {
-      console.log("=== INICIANDO TRANSFERÊNCIA ===");
-      console.log("Dados recebidos:", data);
+      setLoadingTransaction(true);
 
-      // Verificar se o usuário está logado
       if (!auth.currentUser) {
         showSnackBar("Usuário não está logado!", typeSnackbar.ERROR);
         return;
@@ -74,19 +78,18 @@ export default function Transfer({ onClose }: TransferProps) {
 
       let comprovanteURL = null;
 
-      // Upload do arquivo para Firebase Storage
       if (data.comprovante) {
         try {
           const file = data.comprovante;
-          const fileName = `comprovantes/${Date.now()}_${file.name}`;
+          const fileName = `${IFirebaseStorage.COMPROVANTES}/${Date.now()}_${
+            file.name
+          }`;
           const storageRef = ref(storage, fileName);
 
-          // Converter arquivo para blob
           const response = await fetch(file.uri);
           const blob = await response.blob();
 
           console.log("Fazendo upload...");
-          // Upload para Storage
           const snapshot = await uploadBytes(storageRef, blob);
           comprovanteURL = await getDownloadURL(snapshot.ref);
         } catch (uploadError) {
@@ -95,7 +98,6 @@ export default function Transfer({ onClose }: TransferProps) {
         }
       }
 
-      // Buscar os nomes das categorias e métodos
       const selectedCategory = categories.find(
         (cat) => cat.id === data.categoria
       );
@@ -103,7 +105,6 @@ export default function Transfer({ onClose }: TransferProps) {
         (method) => method.id === data.metodoPagamento
       );
 
-      // Dados para salvar no Firestore
       const transactionData: ITransaction = {
         userId: auth.currentUser.uid,
         category: selectedCategory?.label || data.categoria,
@@ -117,27 +118,21 @@ export default function Transfer({ onClose }: TransferProps) {
         status: "realizada",
       };
 
-      console.log("=== SALVANDO NO FIRESTORE ===");
-      console.log("Dados:", transactionData);
-
-      // Salvar no Firestore
       const docRef = await addDoc(
-        collection(db, "transaction"),
+        collection(db, IFirebaseCollection.TRANSACTION),
         transactionData
       );
-      console.log("✅ SUCESSO! ID:", docRef.id);
 
-      // Mostrar mensagem de sucesso
       showSnackBar(
         "Transferência realizada com sucesso!",
         typeSnackbar.SUCCESS
       );
 
-      // Limpar formulário e fechar
       reset();
     } catch (error: any) {
-      console.error("❌ ERRO COMPLETO:", error);
       showSnackBar(`Erro: ${error.message}`, typeSnackbar.ERROR);
+    } finally {
+      setLoadingTransaction(false);
     }
   };
 
@@ -201,7 +196,6 @@ export default function Transfer({ onClose }: TransferProps) {
               control={control}
               name="comprovante"
               label="Comprovante da Transferência"
-              rules={{ required: "Comprovante é obrigatório" }}
             />
 
             <Button
@@ -211,15 +205,19 @@ export default function Transfer({ onClose }: TransferProps) {
             >
               Realizar Transferência
             </Button>
-            <BytebankSnackbar
-              type={type}
-              visible={visible}
-              message={message}
-              onDismiss={hideSnackBar}
-            />
           </View>
         </ScrollView>
       </BytebankDrawerSection>
+      <BytebankSnackbar
+        type={type}
+        visible={visible}
+        message={message}
+        onDismiss={hideSnackBar}
+      />
+      <BytebankLoading
+        visible={loadingTransaction}
+        message="Salvando transferência..."
+      />
     </View>
   );
 }

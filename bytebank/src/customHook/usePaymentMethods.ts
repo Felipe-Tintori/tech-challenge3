@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
+import { IFirebaseCollection } from "../enum/firebaseCollection";
 
 interface PaymentMethod {
   id: string;
@@ -18,7 +19,9 @@ export function usePaymentMethods() {
     const fetchPaymentMethods = async () => {
       try {
         setLoading(true);
-        const querySnapshot = await getDocs(collection(db, "method")); // ou o nome da sua collection
+        const querySnapshot = await getDocs(
+          collection(db, IFirebaseCollection.METHOD)
+        );
         const paymentMethodsData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),

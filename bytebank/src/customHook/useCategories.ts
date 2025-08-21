@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../services/firebaseConfig";
+import { IFirebaseCollection } from "../enum/firebaseCollection";
 
 interface Category {
   id: string;
@@ -18,7 +19,9 @@ export function useCategories() {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const querySnapshot = await getDocs(collection(db, "category"));
+        const querySnapshot = await getDocs(
+          collection(db, IFirebaseCollection.CATEGORY)
+        );
         const categoriesData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
