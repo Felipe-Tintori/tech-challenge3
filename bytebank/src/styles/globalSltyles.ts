@@ -20,6 +20,7 @@ export const fontSizes = {
   title: 28,
   text: 16,
   small: 12,
+  subtitle: 22,
 };
 
 export const heightFormControl = {

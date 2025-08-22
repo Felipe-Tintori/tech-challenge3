@@ -1,126 +1,144 @@
+// src/screens/home/components/extract/styles.ts
 import { StyleSheet } from "react-native";
-import { colors, spacing } from "../../../../styles/globalSltyles";
+import { colors, fontSizes, spacing } from "../../../../styles/globalSltyles";
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.card,
+    backgroundColor: "#2A2A2A", // Fundo escuro como na imagem
   },
+
   listContainer: {
-    flexGrow: 1,
     padding: spacing.medium,
+    backgroundColor: colors.card,
+    margin: spacing.medium,
+    borderRadius: spacing.small,
   },
-  header: {
-    marginBottom: 16,
+
+  headerContainer: {
+    marginBottom: 20,
   },
+
   headerTitle: {
-    fontSize: 24,
+    fontSize: fontSizes.subtitle,
     fontWeight: "bold",
-    color: "#FFF",
+    color: "#FFFFFF",
     marginBottom: 4,
   },
-  headerSubtitle: {
-    paddingTop: 5,
-    fontSize: 14,
-    color: "#FFF",
-  },
-  transactionCard: {
-    borderRadius: 12,
-  },
-  transactionHeader: {
+
+  // Novo layout para transação
+  transactionItem: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 0,
   },
-  categoryInfo: {
+
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#3A3A3A", // Fundo cinza escuro
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+
+  transactionIcon: {
+    fontSize: 18,
+    color: "#FFFFFF",
+    fontWeight: "bold",
+  },
+
+  transactionInfo: {
     flex: 1,
+    justifyContent: "center",
   },
-  categoryText: {
+
+  paymentMethod: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.text || "#000",
+    color: "#FFFFFF",
     marginBottom: 2,
   },
-  paymentText: {
-    fontSize: 14,
-    color: colors.text || "#666",
-  },
-  valueInfo: {
-    alignItems: "flex-end",
-  },
-  valueText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.primary || "#6200EE",
-    marginBottom: 4,
-  },
-  statusChip: {
-    minWidth: 80,
-  },
-  statusText: {
-    color: "#fff",
+
+  transactionDateTime: {
     fontSize: 12,
+    color: "#AAAAAA", // Cinza claro
+  },
+
+  valueContainer: {
+    alignItems: "flex-end",
+    marginRight: 12,
+  },
+
+  transactionValue: {
+    fontSize: 16,
     fontWeight: "600",
+    color: "#FFFFFF",
   },
-  divider: {
-    marginVertical: 12,
-    backgroundColor: colors.border || "#e0e0e0",
-  },
-  transactionFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+
+  menuButton: {
+    width: 24,
+    height: 24,
+    justifyContent: "center",
     alignItems: "center",
   },
-  dateText: {
-    fontSize: 13,
-    color: colors.text || "#666",
+
+  menuIcon: {
+    fontSize: 16,
+    color: "#AAAAAA",
+    fontWeight: "bold",
+    transform: [{ rotate: "90deg" }],
   },
-  attachmentText: {
-    fontSize: 12,
-    color: colors.primary || "#6200EE",
-    fontStyle: "italic",
-  },
+
   separator: {
-    height: 8,
+    height: 1,
+    backgroundColor: "#3A3A3A",
+    marginVertical: 8,
   },
+
+  // Estados vazios e erro
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 60,
   },
+
   emptyText: {
     fontSize: 48,
     marginBottom: 16,
   },
+
   emptyTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: colors.text || "#000",
+    color: "#FFFFFF",
     marginBottom: 8,
     textAlign: "center",
   },
+
   emptySubtitle: {
     fontSize: 14,
-    color: colors.text || "#666",
+    color: "#AAAAAA",
     textAlign: "center",
   },
+
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
+
   errorText: {
     fontSize: 16,
     color: colors.error || "#F44336",
     textAlign: "center",
   },
 
-  headerContainer: {
-    marginBottom: 16,
-  },
-
+  // Paginação
   paginationContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -136,7 +154,7 @@ export const styles = StyleSheet.create({
   },
 
   paginationButtonDisabled: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#3A3A3A",
   },
 
   paginationInfo: {
@@ -147,14 +165,21 @@ export const styles = StyleSheet.create({
   paginationText: {
     fontSize: 14,
     fontWeight: "600",
-    color: colors.text,
+    color: "#FFFFFF",
     textAlign: "center",
   },
+  menuContent: {
+    backgroundColor: "#3A3A3A",
+    borderRadius: 8,
+    minWidth: 120,
+  },
 
-  paginationSubtext: {
-    fontSize: 12,
-    color: "#666",
-    textAlign: "center",
-    marginTop: 2,
+  menuItemText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+  },
+
+  deleteText: {
+    color: "#FF6B6B", // Vermelho para excluir
   },
 });

@@ -1,24 +1,24 @@
 // src/screens/home/components/extract/index.tsx
 import React, { useState, useMemo } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
-import { Card, Text, Chip, Divider, IconButton } from "react-native-paper";
+import { View, FlatList, TouchableOpacity, Alert } from "react-native";
+import { Text, IconButton, Menu, Divider } from "react-native-paper";
 import { useTransactions } from "../../../../context/TransactionContext";
 import { ITransaction } from "../../../../interface/transaction";
-import { colors, spacing } from "../../../../styles/globalSltyles";
 import BytebankLoading from "../../../../shared/components/loading";
 import { styles } from "./styles";
 
 export default function Extract() {
   const { transactions, loading, error } = useTransactions();
   const [currentPage, setCurrentPage] = useState(0);
+  const [menuVisible, setMenuVisible] = useState<{ [key: string]: boolean }>(
+    {}
+  );
   const itemsPerPage = 4;
 
-  // Cálculos da paginação
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
-  // Transações da página atual
   const currentTransactions = useMemo(() => {
     return transactions.slice(startIndex, endIndex);
   }, [transactions, startIndex, endIndex]);
@@ -32,6 +32,14 @@ export default function Extract() {
     });
   };
 
+  const formatTime = (date: Date | string): string => {
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+    return dateObj.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -39,16 +47,15 @@ export default function Extract() {
     }).format(value);
   };
 
-  const getStatusColor = (status: string): string => {
-    switch (status?.toLowerCase()) {
-      case "realizada":
-        return colors.primary || "#4CAF50";
-      case "pendente":
-        return "#FF9800";
-      case "cancelada":
-        return colors.error || "#F44336";
+  const getTransactionIcon = (payment: string): string => {
+    switch (payment?.toLowerCase()) {
+      case "doc":
+      case "ted":
+        return "↓";
+      case "pix":
+        return "→";
       default:
-        return colors.primary || "#6200EE";
+        return "↓";
     }
   };
 
@@ -64,44 +71,112 @@ export default function Extract() {
     }
   };
 
-  const renderTransactionItem = ({ item }: { item: ITransaction }) => (
-    <Card style={styles.transactionCard}>
-      <Card.Content>
-        <View style={styles.transactionHeader}>
-          <View style={styles.categoryInfo}>
-            <Text style={styles.categoryText}>{item.category}</Text>
-            <Text style={styles.paymentText}>{item.payment}</Text>
-          </View>
+  // Funções para o menu
+  const openMenu = (transactionId: string) => {
+    setMenuVisible({ ...menuVisible, [transactionId]: true });
+  };
 
-          <View style={styles.valueInfo}>
-            <Text style={styles.valueText}>{formatCurrency(item.value)}</Text>
-            <Chip
-              mode="flat"
-              style={[
-                styles.statusChip,
-                { backgroundColor: getStatusColor(item.status) },
-              ]}
-              textStyle={styles.statusText}
-            >
-              {item.status}
-            </Chip>
-          </View>
-        </View>
+  const closeMenu = (transactionId: string) => {
+    setMenuVisible({ ...menuVisible, [transactionId]: false });
+  };
 
-        <Divider style={styles.divider} />
+  const handleEdit = (transaction: ITransaction) => {
+    closeMenu(transaction.userId + transaction.dataTransaction);
+    // TODO: Implementar navegação para tela de edição
+    Alert.alert(
+      "Editar Transação",
+      `Editar ${transaction.payment} de ${formatCurrency(transaction.value)}?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Editar",
+          onPress: () => {
+            console.log("Editar transação:", transaction);
+          },
+        },
+      ]
+    );
+  };
 
-        <View style={styles.transactionFooter}>
-          <Text style={styles.dateText}>
-            📅 {formatDate(item.dataTransaction)}
+  const handleDelete = (transaction: ITransaction) => {
+    closeMenu(transaction.userId + transaction.dataTransaction);
+    Alert.alert(
+      "Excluir Transação",
+      `Tem certeza que deseja excluir esta transação de ${formatCurrency(
+        transaction.value
+      )}?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: () => {},
+        },
+      ]
+    );
+  };
+
+  const renderTransactionItem = ({
+    item,
+    index,
+  }: {
+    item: ITransaction;
+    index: number;
+  }) => {
+    const transactionKey = item.userId + item.dataTransaction + index;
+
+    return (
+      <TouchableOpacity style={styles.transactionItem}>
+        <View style={styles.iconContainer}>
+          <Text style={styles.transactionIcon}>
+            {getTransactionIcon(item.payment)}
           </Text>
-
-          {item.comprovanteURL && (
-            <Text style={styles.attachmentText}>📎 Comprovante anexado</Text>
-          )}
         </View>
-      </Card.Content>
-    </Card>
-  );
+
+        <View style={styles.transactionInfo}>
+          <Text style={styles.paymentMethod}>{item.payment}</Text>
+          <Text style={styles.transactionDateTime}>
+            {formatDate(item.dataTransaction)}{" "}
+            {formatTime(item.dataTransaction)}
+          </Text>
+        </View>
+
+        <View style={styles.valueContainer}>
+          <Text style={styles.transactionValue}>
+            {formatCurrency(item.value)}
+          </Text>
+        </View>
+
+        <Menu
+          visible={menuVisible[transactionKey] || false}
+          onDismiss={() => closeMenu(transactionKey)}
+          anchor={
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => openMenu(transactionKey)}
+            >
+              <Text style={styles.menuIcon}>⋮</Text>
+            </TouchableOpacity>
+          }
+          contentStyle={styles.menuContent}
+        >
+          <Menu.Item
+            onPress={() => handleEdit(item)}
+            title="Editar"
+            leadingIcon="pencil"
+            titleStyle={styles.menuItemText}
+          />
+          <Divider />
+          <Menu.Item
+            onPress={() => handleDelete(item)}
+            title="Excluir"
+            leadingIcon="delete"
+            titleStyle={[styles.menuItemText, styles.deleteText]}
+          />
+        </Menu>
+      </TouchableOpacity>
+    );
+  };
 
   const renderEmptyList = () => (
     <View style={styles.emptyContainer}>
@@ -116,9 +191,6 @@ export default function Extract() {
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       <Text style={styles.headerTitle}>Extrato</Text>
-      <Text style={styles.headerSubtitle}>
-        {transactions.length} transação(ões)
-      </Text>
     </View>
   );
 
@@ -141,10 +213,6 @@ export default function Extract() {
         <View style={styles.paginationInfo}>
           <Text style={styles.paginationText}>
             Página {currentPage + 1} de {totalPages}
-          </Text>
-          <Text style={styles.paginationSubtext}>
-            {startIndex + 1}-{Math.min(endIndex, transactions.length)} de{" "}
-            {transactions.length}
           </Text>
         </View>
 
@@ -175,16 +243,7 @@ export default function Extract() {
   }
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          margin: 32,
-          backgroundColor: colors.card,
-          borderRadius: spacing.small,
-        },
-      ]}
-    >
+    <View style={styles.container}>
       <FlatList
         data={currentTransactions}
         keyExtractor={(item, index) => `${item.userId}-${currentPage}-${index}`}
