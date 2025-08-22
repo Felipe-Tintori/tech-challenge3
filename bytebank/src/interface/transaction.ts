@@ -1,4 +1,5 @@
 export interface ITransaction {
+  id?: string;
   userId: string;
   category: string;
   categoryId: string;

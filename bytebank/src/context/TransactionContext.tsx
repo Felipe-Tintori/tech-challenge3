@@ -70,6 +70,7 @@ export function TransactionProvider({ children }: TransactionProviderProps) {
               const data = doc.data() as ITransaction;
 
               const transaction: ITransaction = {
+                id: doc.id,
                 userId: data.userId,
                 category: data.category,
                 categoryId: data.categoryId,

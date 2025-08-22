@@ -1,18 +1,23 @@
 // src/screens/home/components/extract/index.tsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { View, FlatList, TouchableOpacity, Alert } from "react-native";
 import { Text, IconButton, Menu, Divider } from "react-native-paper";
 import { useTransactions } from "../../../../context/TransactionContext";
 import { ITransaction } from "../../../../interface/transaction";
 import BytebankLoading from "../../../../shared/components/loading";
 import { styles } from "./styles";
+import DeleteModal from "./components/deleteModal";
 
 export default function Extract() {
   const { transactions, loading, error } = useTransactions();
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<ITransaction | null>(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [menuVisible, setMenuVisible] = useState<{ [key: string]: boolean }>(
     {}
   );
+
   const itemsPerPage = 4;
 
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
@@ -99,22 +104,28 @@ export default function Extract() {
   };
 
   const handleDelete = (transaction: ITransaction) => {
-    closeMenu(transaction.userId + transaction.dataTransaction);
-    Alert.alert(
-      "Excluir Transação",
-      `Tem certeza que deseja excluir esta transação de ${formatCurrency(
-        transaction.value
-      )}?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: () => {},
-        },
-      ]
-    );
+    const transactionId = transaction?.id;
+    if (!transactionId) {
+      return;
+    }
+    closeMenu(transactionId);
+    console.log("Abrindo modal de delete para:", transaction);
+    setTransactionToDelete(transaction);
+    setDeleteModalVisible(true);
   };
+
+  // Função para cancelar/fechar o modal
+  const handleCancelDelete = () => {
+    console.log("Cancelando delete");
+    setDeleteModalVisible(false);
+    setTransactionToDelete(null);
+  };
+
+  useEffect(() => {
+    if (transactions) {
+      console.log("Transações atualizadas:", transactions);
+    }
+  }, [transactions]);
 
   const renderTransactionItem = ({
     item,
@@ -254,6 +265,11 @@ export default function Extract() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+      <DeleteModal
+        visibleModal={deleteModalVisible}
+        transaction={transactionToDelete}
+        onCancel={handleCancelDelete}
       />
     </View>
   );
