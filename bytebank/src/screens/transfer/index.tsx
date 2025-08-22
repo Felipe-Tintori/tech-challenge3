@@ -1,5 +1,5 @@
 // No componente Transfer
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
 import { useForm } from "react-hook-form";
 import { Button, IconButton } from "react-native-paper";
@@ -27,6 +27,8 @@ import UserContext from "../../context/UserContext";
 
 interface TransferProps {
   onClose?: () => void;
+  editMode?: boolean;
+  transactionData?: ITransaction;
 }
 
 interface ITransferForm {
@@ -37,10 +39,14 @@ interface ITransferForm {
   comprovante?: any; // Novo campo para o arquivo
 }
 
-export default function Transfer({ onClose }: TransferProps) {
+export default function Transfer({
+  onClose,
+  editMode = false,
+  transactionData,
+}: TransferProps) {
   const [loadingTransaction, setLoadingTransaction] = useState(false);
   const userContext = useContext(UserContext);
-  const { control, handleSubmit, reset } = useForm<ITransferForm>({
+  const { control, handleSubmit, reset, setValue } = useForm<ITransferForm>({
     defaultValues: {
       categoria: "",
       metodoPagamento: "",
@@ -56,6 +62,17 @@ export default function Transfer({ onClose }: TransferProps) {
     loading: paymentMethodsLoading,
     error: paymentMethodsError,
   } = usePaymentMethods();
+
+  useEffect(() => {
+    if (editMode && transactionData) {
+      console.log("Preenchendo dados para edição:", transactionData);
+
+      setValue("categoria", transactionData.categoryId);
+      setValue("metodoPagamento", transactionData.paymentId);
+      setValue("valor", transactionData.value.toString());
+      setValue("dataTransferencia", transactionData.dataTransaction);
+    }
+  }, [editMode, transactionData, setValue]);
 
   const categoriaOptions = categories.map((category) => ({
     label: category.label,
@@ -152,7 +169,9 @@ export default function Transfer({ onClose }: TransferProps) {
         </View>
       )}
 
-      <BytebankDrawerSection title="Transferência">
+      <BytebankDrawerSection
+        title={editMode ? "Editar Transferência" : "Realizar Transferência"}
+      >
         <ScrollView style={styles.formContainer}>
           <View style={styles.form}>
             <BytebankSelect
@@ -194,19 +213,20 @@ export default function Transfer({ onClose }: TransferProps) {
               label="Data da Transferência"
               rules={{ required: "Data da transferência é obrigatória" }}
             />
-
-            <BytebankFileUpload
-              control={control}
-              name="comprovante"
-              label="Comprovante da Transferência"
-            />
+            {!editMode && (
+              <BytebankFileUpload
+                control={control}
+                name="comprovante"
+                label="Comprovante da Transferência"
+              />
+            )}
 
             <Button
               mode="contained"
               onPress={handleSubmit(onSubmit)}
               style={styles.button}
             >
-              Realizar Transferência
+              {editMode ? "Atualizar Transferência" : "Realizar Transferência"}
             </Button>
           </View>
         </ScrollView>

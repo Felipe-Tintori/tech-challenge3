@@ -7,6 +7,7 @@ import { ITransaction } from "../../../../interface/transaction";
 import BytebankLoading from "../../../../shared/components/loading";
 import { styles } from "./styles";
 import DeleteModal from "./components/deleteModal";
+import Transfer from "../../../transfer";
 
 export default function Extract() {
   const { transactions, loading, error } = useTransactions();
@@ -23,6 +24,9 @@ export default function Extract() {
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] =
+    useState<ITransaction | null>(null);
 
   const currentTransactions = useMemo(() => {
     return transactions.slice(startIndex, endIndex);
@@ -86,21 +90,22 @@ export default function Extract() {
   };
 
   const handleEdit = (transaction: ITransaction) => {
-    closeMenu(transaction.userId + transaction.dataTransaction);
-    // TODO: Implementar navegação para tela de edição
-    Alert.alert(
-      "Editar Transação",
-      `Editar ${transaction.payment} de ${formatCurrency(transaction.value)}?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Editar",
-          onPress: () => {
-            console.log("Editar transação:", transaction);
-          },
-        },
-      ]
-    );
+    const transactionId = transaction?.id;
+    if (!transactionId) {
+      return;
+    }
+    closeMenu(transactionId);
+
+    console.log("Abrindo modal de edição para:", transaction);
+    setTransactionToEdit(transaction);
+    setEditModalVisible(true);
+  };
+
+  // Função para fechar modal de edição
+  const handleCloseEdit = () => {
+    console.log("Fechando modal de edição");
+    setEditModalVisible(false);
+    setTransactionToEdit(null);
   };
 
   const handleDelete = (transaction: ITransaction) => {
@@ -240,6 +245,16 @@ export default function Extract() {
       </View>
     );
   };
+
+  if (editModalVisible && transactionToEdit) {
+    return (
+      <Transfer
+        onClose={handleCloseEdit}
+        editMode={true}
+        transactionData={transactionToEdit}
+      />
+    );
+  }
 
   if (loading) {
     return <BytebankLoading visible={true} message="Carregando extrato..." />;
