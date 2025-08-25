@@ -29,12 +29,6 @@ const formatCurrency = (value: string): string => {
   });
 };
 
-const parseCurrency = (value: string): string => {
-  const cleanValue = value.replace(/\D/g, "");
-  if (!cleanValue) return "";
-  return (parseInt(cleanValue) / 100).toString();
-};
-
 export default function BytebankInput({
   control,
   name,
@@ -61,8 +55,7 @@ export default function BytebankInput({
             outlineColor={colors.border}
             onChangeText={(text) => {
               if (currency) {
-                // Para currency, salva o valor numérico sem formatação
-                const numericValue = parseCurrency(text);
+                const numericValue = formatCurrency(text);
                 onChange(numericValue);
               } else {
                 onChange(text);

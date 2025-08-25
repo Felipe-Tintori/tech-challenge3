@@ -4,7 +4,6 @@ import { colors, fontSizes, spacing } from "../../../../styles/globalSltyles";
 
 export const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: spacing.medium,
     backgroundColor: colors.card,
     margin: spacing.medium,

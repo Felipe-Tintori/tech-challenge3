@@ -1,6 +1,4 @@
-// src/screens/home/components/extract/index.tsx
 import React, { useContext } from "react";
-
 import { styles } from "./styles";
 import { Text, View } from "react-native";
 import UserContext from "../../../../context/UserContext";
@@ -33,12 +31,14 @@ export default function Balance() {
     return `${dayName}, ${formattedDate}`;
   };
 
-  const calculateTotalBalance = (): number => {
-    return transactions.reduce((total, transaction) => {
+  const calculateTotalBalance = (): string => {
+    const total = transactions.reduce((total, transaction) => {
       return transaction.category === "Saque"
         ? total - transaction.value
         : total + transaction.value;
     }, 0);
+
+    return total.toFixed(2);
   };
   return (
     <View style={styles.container}>

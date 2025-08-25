@@ -131,13 +131,27 @@ export default function Transfer({
         (method) => method.id === data.metodoPagamento
       );
 
+      const parseValueToNumber = (value: string): number => {
+        if (!value) return 0;
+
+        // Remove R$, espaços e converte vírgula para ponto
+        const cleanValue = value
+          .replace(/R\$\s?/g, "") // Remove R$ e espaços
+          .replace(/\./g, "") // Remove pontos (separadores de milhares)
+          .replace(",", "."); // Converte vírgula para ponto decimal
+
+        const numValue = parseFloat(cleanValue);
+
+        return isNaN(numValue) ? 0 : numValue;
+      };
+
       const transactionDataToSave: Partial<ITransaction> = {
         userId: currentUser?._id,
         category: selectedCategory?.label || data.categoria,
         categoryId: data.categoria,
         payment: selectedPaymentMethod?.label || data.metodoPagamento,
         paymentId: data.metodoPagamento,
-        value: parseFloat(data.valor) || 0,
+        value: parseValueToNumber(data.valor),
         dataTransaction: data.dataTransferencia || new Date().toISOString(),
         comprovanteURL: comprovanteURL,
         status: "realizada",
@@ -240,13 +254,6 @@ export default function Transfer({
               currency={true} // Ativa a máscara de moeda
               rules={{
                 required: "Valor é obrigatório",
-                validate: (value: string) => {
-                  const numValue = parseFloat(value);
-                  if (isNaN(numValue) || numValue <= 0) {
-                    return "Digite um valor válido maior que zero";
-                  }
-                  return true;
-                },
               }}
             />
 
