@@ -6,6 +6,7 @@ import styles from "./styles";
 import { FAB, Portal } from "react-native-paper";
 import { useTransactions } from "../../context/TransactionContext";
 import Extract from "./components/extract";
+import Balance from "./components/balance";
 
 export default function Home() {
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -21,6 +22,9 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <BytebankHeader />
+      <View>
+        <Balance />
+      </View>
       <View style={{ flex: 1 }}>
         <Extract />
       </View>

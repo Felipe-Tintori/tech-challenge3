@@ -31,37 +31,7 @@ export default function BytebankHeader() {
         resizeMode="contain"
       />
       <Appbar.Content title="" />
-      <Menu
-        visible={menuVisible}
-        onDismiss={() => setMenuVisible(false)}
-        anchor={
-          <Appbar.Action
-            icon="menu"
-            color="#FFF"
-            onPress={() => setMenuVisible(true)}
-          />
-        }
-      >
-        <Menu.Item
-          titleStyle={{
-            color: route.name === "Home" ? colors.primary : colors.text,
-            fontWeight: route.name === "Home" ? "bold" : "normal",
-          }}
-          onPress={() => {
-            setMenuVisible(false);
-            // navigation.navigate("Home");
-          }}
-          title="Home"
-        />
-        <Menu.Item
-          onPress={() => {
-            setMenuVisible(false);
-            // navigation.navigate("Transferencia");
-          }}
-          title="Transferência"
-        />
-        <Menu.Item onPress={handleLogout} title="Sair" />
-      </Menu>
+      <Appbar.Action icon="logout" color="#FFF" onPress={handleLogout} />
     </Appbar.Header>
   );
 }

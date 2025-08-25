@@ -8,6 +8,7 @@ export const colors = {
   inputBackground: "#f2f2f2",
   error: "#ff4d4d",
   border: "#ddd",
+  gray: "#AAAAAA",
 };
 
 export const spacing = {

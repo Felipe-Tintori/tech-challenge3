@@ -8,6 +8,7 @@ import BytebankLoading from "../../../../shared/components/loading";
 import { styles } from "./styles";
 import DeleteModal from "./components/deleteModal";
 import Transfer from "../../../transfer";
+import { CategoryCollection } from "../../../../enum/categoryCollection";
 
 export default function Extract() {
   const { transactions, loading, error } = useTransactions();
@@ -56,16 +57,11 @@ export default function Extract() {
     }).format(value);
   };
 
-  const getTransactionIcon = (payment: string): string => {
-    switch (payment?.toLowerCase()) {
-      case "doc":
-      case "ted":
-        return "↓";
-      case "pix":
-        return "→";
-      default:
-        return "↓";
+  const getTransactionIcon = (category: string): string => {
+    if (category?.toLowerCase() === CategoryCollection.WITHDRAWAL) {
+      return "↓";
     }
+    return "↑";
   };
 
   const handleNextPage = () => {
@@ -145,7 +141,7 @@ export default function Extract() {
       <TouchableOpacity style={styles.transactionItem}>
         <View style={styles.iconContainer}>
           <Text style={styles.transactionIcon}>
-            {getTransactionIcon(item.payment)}
+            {getTransactionIcon(item.category)}
           </Text>
         </View>
 
