@@ -13,7 +13,7 @@ import { useCategories } from "../../customHook/useCategories";
 import { usePaymentMethods } from "../../customHook/usePaymentMethods";
 import BytebankDatePicker from "../../shared/components/datePicker";
 import BytebankFileUpload from "../../shared/components/fileUpload";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../services/firebaseConfig";
 import { ITransaction } from "../../interface/transaction";
@@ -86,8 +86,79 @@ export default function Transfer({
 
   const { showSnackBar, visible, message, type, hideSnackBar } = useSnackBar();
 
+  // const onSubmit = async (data: ITransferForm) => {
+  //   const currentUser = userContext?.user;
+  //   try {
+  //     setLoadingTransaction(true);
+
+  //     if (!currentUser) {
+  //       showSnackBar("Usuário não está logado!", typeSnackbar.ERROR);
+  //       return;
+  //     }
+
+  //     let comprovanteURL = null;
+
+  //     if (data.comprovante) {
+  //       try {
+  //         const file = data.comprovante;
+  //         const fileName = `${IFirebaseStorage.COMPROVANTES}/${Date.now()}_${
+  //           file.name
+  //         }`;
+  //         const storageRef = ref(storage, fileName);
+
+  //         const response = await fetch(file.uri);
+  //         const blob = await response.blob();
+
+  //         console.log("Fazendo upload...");
+  //         const snapshot = await uploadBytes(storageRef, blob);
+  //         comprovanteURL = await getDownloadURL(snapshot.ref);
+  //       } catch (uploadError) {
+  //         showSnackBar("Erro ao fazer upload do arquivo", typeSnackbar.ERROR);
+  //         return;
+  //       }
+  //     }
+
+  //     const selectedCategory = categories.find(
+  //       (cat) => cat.id === data.categoria
+  //     );
+  //     const selectedPaymentMethod = paymentMethods.find(
+  //       (method) => method.id === data.metodoPagamento
+  //     );
+
+  //     const transactionData: ITransaction = {
+  //       userId: currentUser?._id,
+  //       category: selectedCategory?.label || data.categoria,
+  //       categoryId: data.categoria,
+  //       payment: selectedPaymentMethod?.label || data.metodoPagamento,
+  //       paymentId: data.metodoPagamento,
+  //       value: parseFloat(data.valor) || 0,
+  //       dataTransaction: data.dataTransferencia || new Date().toISOString(),
+  //       comprovanteURL: comprovanteURL, // URL do arquivo no Storage
+  //       createdAt: new Date(),
+  //       status: "realizada",
+  //     };
+
+  //     const docRef = await addDoc(
+  //       collection(db, IFirebaseCollection.TRANSACTION),
+  //       transactionData
+  //     );
+
+  //     showSnackBar(
+  //       "Transferência realizada com sucesso!",
+  //       typeSnackbar.SUCCESS
+  //     );
+
+  //     reset();
+  //   } catch (error: any) {
+  //     showSnackBar(`Erro: ${error.message}`, typeSnackbar.ERROR);
+  //   } finally {
+  //     setLoadingTransaction(false);
+  //   }
+  // };
+
   const onSubmit = async (data: ITransferForm) => {
     const currentUser = userContext?.user;
+
     try {
       setLoadingTransaction(true);
 
@@ -98,6 +169,7 @@ export default function Transfer({
 
       let comprovanteURL = null;
 
+      // Upload do comprovante (se houver)
       if (data.comprovante) {
         try {
           const file = data.comprovante;
@@ -113,9 +185,13 @@ export default function Transfer({
           const snapshot = await uploadBytes(storageRef, blob);
           comprovanteURL = await getDownloadURL(snapshot.ref);
         } catch (uploadError) {
+          console.error("Erro no upload:", uploadError);
           showSnackBar("Erro ao fazer upload do arquivo", typeSnackbar.ERROR);
           return;
         }
+      } else if (editMode && transactionData?.comprovanteURL) {
+        // Manter o comprovante existente se não houver novo
+        comprovanteURL = transactionData.comprovanteURL;
       }
 
       const selectedCategory = categories.find(
@@ -125,7 +201,7 @@ export default function Transfer({
         (method) => method.id === data.metodoPagamento
       );
 
-      const transactionData: ITransaction = {
+      const transactionDataToSave: Partial<ITransaction> = {
         userId: currentUser?._id,
         category: selectedCategory?.label || data.categoria,
         categoryId: data.categoria,
@@ -133,24 +209,61 @@ export default function Transfer({
         paymentId: data.metodoPagamento,
         value: parseFloat(data.valor) || 0,
         dataTransaction: data.dataTransferencia || new Date().toISOString(),
-        comprovanteURL: comprovanteURL, // URL do arquivo no Storage
-        createdAt: new Date(),
+        comprovanteURL: comprovanteURL,
         status: "realizada",
       };
 
-      const docRef = await addDoc(
-        collection(db, IFirebaseCollection.TRANSACTION),
-        transactionData
-      );
+      if (editMode && transactionData?.id) {
+        // ATUALIZAR transação existente
+        console.log("Atualizando transação com ID:", transactionData.id);
+        console.log("Dados para atualizar:", transactionDataToSave);
 
-      showSnackBar(
-        "Transferência realizada com sucesso!",
-        typeSnackbar.SUCCESS
-      );
+        const transactionRef = doc(
+          db,
+          IFirebaseCollection.TRANSACTION,
+          transactionData.id
+        );
+
+        await updateDoc(transactionRef, {
+          ...transactionDataToSave,
+          updatedAt: new Date(), // Adicionar timestamp de atualização
+        });
+
+        showSnackBar(
+          "Transferência atualizada com sucesso!",
+          typeSnackbar.SUCCESS
+        );
+
+        console.log("Transação atualizada no Firebase!");
+      } else {
+        // CRIAR nova transação
+        const fullTransactionData: ITransaction = {
+          ...transactionDataToSave,
+          createdAt: new Date(),
+        } as ITransaction;
+
+        const docRef = await addDoc(
+          collection(db, IFirebaseCollection.TRANSACTION),
+          fullTransactionData
+        );
+
+        console.log("Nova transação criada com ID:", docRef.id);
+
+        showSnackBar(
+          "Transferência realizada com sucesso!",
+          typeSnackbar.SUCCESS
+        );
+      }
 
       reset();
     } catch (error: any) {
-      showSnackBar(`Erro: ${error.message}`, typeSnackbar.ERROR);
+      console.error("Erro ao salvar transação:", error);
+      showSnackBar(
+        `Erro ao ${editMode ? "atualizar" : "salvar"} transferência: ${
+          error.message
+        }`,
+        typeSnackbar.ERROR
+      );
     } finally {
       setLoadingTransaction(false);
     }
