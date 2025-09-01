@@ -58,7 +58,7 @@ export default function Extract() {
   };
 
   const getTransactionIcon = (category: string): string => {
-    if (category?.toLowerCase() === CategoryCollection.SAQUE) {
+    if (category?.toLowerCase() === CategoryCollection.SAQUE.toLowerCase()) {
       return "↓";
     }
     return "↑";
