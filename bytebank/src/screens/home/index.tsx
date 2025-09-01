@@ -23,8 +23,8 @@ export default function Home() {
     <View style={styles.container}>
       <BytebankHeader />
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+        style={{ flexGrow: 0 }}
+        contentContainerStyle={{ paddingBottom: 16 }}
         showsVerticalScrollIndicator={false}
       >
         <Balance />

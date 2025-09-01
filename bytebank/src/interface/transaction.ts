@@ -1,7 +1,9 @@
+import { CategoryCollection } from "../enum/categoryCollection";
+
 export interface ITransaction {
   id?: string;
   userId: string;
-  category: string;
+  category: CategoryCollection;
   categoryId: string;
   payment: string;
   paymentId: string;

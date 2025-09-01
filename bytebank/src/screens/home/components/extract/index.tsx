@@ -58,7 +58,7 @@ export default function Extract() {
   };
 
   const getTransactionIcon = (category: string): string => {
-    if (category?.toLowerCase() === CategoryCollection.WITHDRAWAL) {
+    if (category?.toLowerCase() === CategoryCollection.SAQUE) {
       return "↓";
     }
     return "↑";
@@ -99,7 +99,6 @@ export default function Extract() {
 
   // Função para fechar modal de edição
   const handleCloseEdit = () => {
-    console.log("Fechando modal de edição");
     setEditModalVisible(false);
     setTransactionToEdit(null);
   };
@@ -251,7 +250,7 @@ export default function Extract() {
           right: 0,
           bottom: 0,
           zIndex: 999,
-          backgroundColor: "#FFF", // ou "rgba(0,0,0,0.1)" para overlay
+          backgroundColor: "#FFF",
         }}
       >
         <Transfer

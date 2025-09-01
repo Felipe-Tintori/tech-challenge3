@@ -1,4 +1,4 @@
 export enum CategoryCollection {
-  DEPOSIT = "deposito",
-  WITHDRAWAL = "saque",
+  DEPOSIT = "Depósito",
+  SAQUE = "Saque",
 }

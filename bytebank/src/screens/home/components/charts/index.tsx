@@ -6,6 +6,7 @@ import { styles } from "../balance/styles";
 import { useTransactions } from "../../../../context/TransactionContext";
 import { ITransaction } from "../../../../interface/transaction";
 import { colors } from "../../../../styles/globalSltyles";
+import { CategoryCollection } from "../../../../enum/categoryCollection";
 
 const getMonthLabel = (date: Date | string) => {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -32,8 +33,9 @@ const getMonthData = (transactions: ITransaction[]) => {
   transactions.forEach((t) => {
     const monthLabel = getMonthLabel(t.dataTransaction);
     const value = typeof t.value === "number" ? t.value : 0;
+    const isSaque = t.category === CategoryCollection.SAQUE;
     if (!data[monthLabel]) data[monthLabel] = 0;
-    data[monthLabel] += isNaN(value) ? 0 : value;
+    data[monthLabel] += isSaque ? -value : value;
   });
   return data;
 };

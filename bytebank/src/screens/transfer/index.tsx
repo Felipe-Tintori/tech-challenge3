@@ -67,9 +67,16 @@ export default function Transfer({
     if (editMode && transactionData) {
       console.log("Preenchendo dados para edição:", transactionData);
 
+      const formattedValue = transactionData.value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+
       setValue("categoria", transactionData.categoryId);
       setValue("metodoPagamento", transactionData.paymentId);
-      setValue("valor", transactionData.value.toString());
+      setValue("valor", formattedValue);
       setValue("dataTransferencia", transactionData.dataTransaction);
     }
   }, [editMode, transactionData, setValue]);
@@ -173,12 +180,9 @@ export default function Transfer({
           updatedAt: new Date(), // Adicionar timestamp de atualização
         });
 
-        showSnackBar(
-          "Transferência atualizada com sucesso!",
-          typeSnackbar.SUCCESS
-        );
-
-        console.log("Transação atualizada no Firebase!");
+        if (onClose) {
+          onClose();
+        }
       } else {
         // CRIAR nova transação
         const fullTransactionData: ITransaction = {
