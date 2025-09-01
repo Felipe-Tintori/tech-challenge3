@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import BytebankHeader from "../../shared/components/header";
-import Transfer from "../transfer"; // Importe o componente Transfer
+import Transfer from "../transfer";
 import styles from "./styles";
 import { FAB, Portal } from "react-native-paper";
 import Extract from "./components/extract";
 import Balance from "./components/balance";
+import Charts from "./components/charts";
 
 export default function Home() {
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -21,13 +22,18 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <BytebankHeader />
-      <Balance />
-      <View style={{ flex: 1 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Balance />
+        <Charts />
         <Extract />
-      </View>
+      </ScrollView>
+
       <FAB icon="plus" style={styles.fab} onPress={handleFABPress} />
 
-      {/* Drawer de Transferência */}
       {drawerVisible && (
         <Portal>
           <View style={styles.drawerOverlay}>

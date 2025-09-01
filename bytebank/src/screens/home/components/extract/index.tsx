@@ -148,8 +148,7 @@ export default function Extract() {
         <View style={styles.transactionInfo}>
           <Text style={styles.paymentMethod}>{item.payment}</Text>
           <Text style={styles.transactionDateTime}>
-            {formatDate(item.dataTransaction)}{" "}
-            {formatTime(item.dataTransaction)}
+            {formatDate(item.dataTransaction)}
           </Text>
         </View>
 
@@ -244,11 +243,23 @@ export default function Extract() {
 
   if (editModalVisible && transactionToEdit) {
     return (
-      <Transfer
-        onClose={handleCloseEdit}
-        editMode={true}
-        transactionData={transactionToEdit}
-      />
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 999,
+          backgroundColor: "#FFF", // ou "rgba(0,0,0,0.1)" para overlay
+        }}
+      >
+        <Transfer
+          onClose={handleCloseEdit}
+          editMode={true}
+          transactionData={transactionToEdit}
+        />
+      </View>
     );
   }
 
