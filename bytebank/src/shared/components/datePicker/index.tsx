@@ -23,6 +23,26 @@ export default function BytebankDatePicker({
     return date.toLocaleDateString("pt-BR");
   };
 
+  const WebDatePicker = ({ value, onChange }: any) => (
+    <input
+      type="date"
+      value={value ? new Date(value).toISOString().split("T")[0] : ""}
+      onChange={(e) => {
+        const date = new Date(e.target.value);
+        onChange(date.toISOString());
+      }}
+      style={{
+        position: "absolute",
+        opacity: 0,
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        cursor: "pointer",
+      }}
+    />
+  );
+
   return (
     <Controller
       control={control}
@@ -40,18 +60,22 @@ export default function BytebankDatePicker({
             />
           </TouchableOpacity>
 
-          {show && (
-            <DateTimePicker
-              value={value ? new Date(value) : new Date()}
-              mode="date"
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={(event, selectedDate) => {
-                setShow(false);
-                if (event.type === "set" && selectedDate) {
-                  onChange(selectedDate.toISOString());
-                }
-              }}
-            />
+          {Platform.OS === "web" ? (
+            <WebDatePicker value={value} onChange={onChange} />
+          ) : (
+            show && (
+              <DateTimePicker
+                value={value ? new Date(value) : new Date()}
+                mode="date"
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={(event, selectedDate) => {
+                  setShow(false);
+                  if (event.type === "set" && selectedDate) {
+                    onChange(selectedDate.toISOString());
+                  }
+                }}
+              />
+            )
           )}
         </View>
       )}
