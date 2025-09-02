@@ -79,6 +79,13 @@ export default function Transfer({
       setValue("metodoPagamento", transactionData.paymentId);
       setValue("valor", formattedValue);
       setValue("dataTransferencia", transactionData.dataTransaction);
+      if (transactionData.comprovanteURL) {
+        setValue("comprovante", {
+          uri: transactionData.comprovanteURL,
+          name: "Comprovante existente",
+          isExisting: true,
+        });
+      }
     }
   }, [editMode, transactionData, setValue]);
 
@@ -269,13 +276,11 @@ export default function Transfer({
               label="Data da Transferência"
               rules={{ required: "Data da transferência é obrigatória" }}
             />
-            {!editMode && (
-              <BytebankFileUpload
-                control={control}
-                name="comprovante"
-                label="Comprovante da Transferência"
-              />
-            )}
+            <BytebankFileUpload
+              control={control}
+              name="comprovante"
+              label="Comprovante da Transferência"
+            />
 
             <Button
               mode="contained"
