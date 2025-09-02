@@ -24,6 +24,7 @@ import {
 } from "../../enum/firebaseCollection";
 import BytebankLoading from "../../shared/components/loading";
 import UserContext from "../../context/UserContext";
+import { CategoryCollection } from "../../enum/categoryCollection";
 
 interface TransferProps {
   onClose?: () => void;
@@ -154,7 +155,8 @@ export default function Transfer({
 
       const transactionDataToSave: Partial<ITransaction> = {
         userId: currentUser?._id,
-        category: selectedCategory?.label || data.categoria,
+        category:
+          (selectedCategory?.label as CategoryCollection) || data.categoria,
         categoryId: data.categoria,
         payment: selectedPaymentMethod?.label || data.metodoPagamento,
         paymentId: data.metodoPagamento,

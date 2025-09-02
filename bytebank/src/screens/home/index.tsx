@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, FlatList } from "react-native";
 import BytebankHeader from "../../shared/components/header";
 import Transfer from "../transfer";
 import styles from "./styles";
@@ -19,18 +19,25 @@ export default function Home() {
     setDrawerVisible(false);
   };
 
-  return (
-    <View style={styles.container}>
-      <BytebankHeader />
-      <ScrollView
-        style={{ flexGrow: 0 }}
-        contentContainerStyle={{ paddingBottom: 16 }}
-        showsVerticalScrollIndicator={false}
-      >
+  const renderContent = () => {
+    return (
+      <View>
         <Balance />
         <Charts />
         <Extract />
-      </ScrollView>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <BytebankHeader />
+      <FlatList
+        data={[{ key: "content" }]}
+        renderItem={() => renderContent()}
+        contentContainerStyle={{ paddingBottom: 16 }}
+        showsVerticalScrollIndicator={false}
+      />
 
       <FAB icon="plus" style={styles.fab} onPress={handleFABPress} />
 

@@ -5,7 +5,10 @@ import { colors, fontSizes, spacing } from "../../../../styles/globalSltyles";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#2A2A2A", // Fundo escuro como na imagem
+    backgroundColor: colors.card,
+    padding: spacing.medium,
+    margin: spacing.medium,
+    borderRadius: spacing.small,
   },
 
   listContainer: {
