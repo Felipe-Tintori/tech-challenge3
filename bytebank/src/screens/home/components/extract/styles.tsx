@@ -20,6 +20,9 @@ export const styles = StyleSheet.create({
 
   headerContainer: {
     marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 
   headerTitle: {

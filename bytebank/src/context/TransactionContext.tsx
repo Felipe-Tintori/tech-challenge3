@@ -25,6 +25,7 @@ interface TransactionContextData {
   refreshTransactions: () => void;
   totalTransactions: number;
   totalValue: number;
+  setTransactions: React.Dispatch<React.SetStateAction<ITransaction[]>>;
 }
 
 interface TransactionProviderProps {
@@ -155,6 +156,7 @@ export function TransactionProvider({ children }: TransactionProviderProps) {
     refreshTransactions,
     totalTransactions,
     totalValue,
+    setTransactions,
   };
 
   return (

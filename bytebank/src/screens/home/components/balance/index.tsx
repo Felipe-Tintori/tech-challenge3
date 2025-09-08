@@ -38,8 +38,13 @@ export default function Balance() {
         : total + transaction.value;
     }, 0);
 
-    return total.toFixed(2);
+    // Formata o número no estilo brasileiro
+    return total.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   };
+
   return (
     <View style={styles.container}>
       <View>
@@ -54,7 +59,7 @@ export default function Balance() {
         >
           Saldo
         </Text>
-        <Text style={styles.headerTitle}>R$ {calculateTotalBalance()} </Text>
+        <Text style={styles.headerTitle}>{calculateTotalBalance()} </Text>
       </View>
     </View>
   );

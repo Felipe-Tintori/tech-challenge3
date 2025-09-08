@@ -9,9 +9,11 @@ import { styles } from "./styles";
 import DeleteModal from "./components/deleteModal";
 import Transfer from "../../../transfer";
 import { CategoryCollection } from "../../../../enum/categoryCollection";
+import Filter from "../filter";
+import { FilterButton } from "./components/filterButton";
 
 export default function Extract() {
-  const { transactions, loading, error } = useTransactions();
+  const { transactions, loading, error, setTransactions } = useTransactions();
   const [transactionToDelete, setTransactionToDelete] =
     useState<ITransaction | null>(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -201,6 +203,8 @@ export default function Extract() {
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       <Text style={styles.headerTitle}>Extrato</Text>
+
+      <FilterButton></FilterButton>
     </View>
   );
 
