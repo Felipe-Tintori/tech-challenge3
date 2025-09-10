@@ -1,7 +1,13 @@
 // src/screens/home/components/extract/index.tsx
 import React, { useState, useMemo, useEffect } from "react";
-import { View, FlatList, TouchableOpacity, Alert } from "react-native";
-import { Text, IconButton, Menu, Divider } from "react-native-paper";
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+} from "react-native";
+import { Text, IconButton, Menu, Divider, Portal } from "react-native-paper";
 import { useTransactions } from "../../../../context/TransactionContext";
 import { ITransaction } from "../../../../interface/transaction";
 import BytebankLoading from "../../../../shared/components/loading";
@@ -246,20 +252,26 @@ export default function Extract() {
 
   if (editModalVisible && transactionToEdit) {
     return (
-      <View
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          zIndex: 999,
-        }}
-      >
-        <Transfer
-          onClose={handleCloseEdit}
-          editMode={true}
-          transactionData={transactionToEdit}
-        />
-      </View>
+      <Portal>
+        <View
+          style={[
+            StyleSheet.absoluteFillObject,
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 99999999,
+            },
+          ]}
+        >
+          <Transfer
+            onClose={handleCloseEdit}
+            editMode={true}
+            transactionData={transactionToEdit}
+          />
+        </View>
+      </Portal>
     );
   }
 

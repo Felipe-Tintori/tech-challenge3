@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { IconButton, Portal, Text } from "react-native-paper";
 import { useTransactions } from "../../../../../../context/TransactionContext";
 import { styles } from "./styles";
@@ -61,13 +61,16 @@ export const FilterButton = () => {
       {filterVisible && (
         <Portal>
           <View
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              zIndex: 99999999,
-            }}
+            style={[
+              StyleSheet.absoluteFillObject,
+              {
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 99999999,
+              },
+            ]}
           >
             <Filter onClose={clearFilter} onFilter={handleFilter} />
           </View>
