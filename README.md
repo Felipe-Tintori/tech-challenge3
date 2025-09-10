@@ -30,8 +30,8 @@ Certifique-se de ter as seguintes ferramentas instaladas:
 Clone o repositório para sua máquina local:
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/Felipe-Tintori/tech-challenge3.git
+cd bytebank
 
 ### 3. Instalar Dependências
 
