@@ -26,6 +26,8 @@ interface TransactionContextData {
   totalTransactions: number;
   totalValue: number;
   setTransactions: React.Dispatch<React.SetStateAction<ITransaction[]>>;
+  setFilter: React.Dispatch<React.SetStateAction<boolean>>;
+  filter: boolean;
 }
 
 interface TransactionProviderProps {
@@ -41,6 +43,7 @@ export function TransactionProvider({ children }: TransactionProviderProps) {
   const userContext = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState(false);
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -136,10 +139,34 @@ export function TransactionProvider({ children }: TransactionProviderProps) {
     };
   }, [userContext?.user]);
 
-  // Função para forçar atualização manual (se necessário)
   const refreshTransactions = () => {
     setLoading(true);
-    // O listener já vai atualizar automaticamente
+    const transactionsRef = collection(db, IFirebaseCollection.TRANSACTION);
+    const q = query(transactionsRef);
+
+    onSnapshot(
+      q,
+      (snapshot) => {
+        const allTransactions = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as ITransaction[];
+
+        allTransactions.sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return dateB - dateA;
+        });
+
+        setTransactions(allTransactions);
+        setLoading(false);
+      },
+      (err) => {
+        console.error("Erro ao buscar transações:", err);
+        setError(`Erro ao buscar transações: ${err.message}`);
+        setLoading(false);
+      }
+    );
   };
 
   // Valores calculados
@@ -157,6 +184,8 @@ export function TransactionProvider({ children }: TransactionProviderProps) {
     totalTransactions,
     totalValue,
     setTransactions,
+    setFilter,
+    filter,
   };
 
   return (
