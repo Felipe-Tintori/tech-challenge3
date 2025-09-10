@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, ScrollView } from "react-native";
 import { useForm } from "react-hook-form";
 import { Button, IconButton } from "react-native-paper";
@@ -15,6 +15,7 @@ import { db } from "../../../../services/firebaseConfig";
 import { IFirebaseCollection } from "../../../../enum/firebaseCollection";
 import { useTransactions } from "../../../../context/TransactionContext";
 import { ITransaction } from "../../../../interface/transaction";
+import UserContext from "../../../../context/UserContext";
 
 interface IFilterForm {
   categoria: string;
@@ -29,6 +30,7 @@ interface FilterProps {
 }
 
 export default function Filter({ onClose, onFilter }: FilterProps) {
+  const userContext = useContext(UserContext);
   const { control, handleSubmit, reset } = useForm<IFilterForm>({
     defaultValues: {
       categoria: "",
@@ -53,8 +55,15 @@ export default function Filter({ onClose, onFilter }: FilterProps) {
 
   const onSubmit = async (data: IFilterForm) => {
     try {
+      const currentUser = userContext?.user;
       const transactionsRef = collection(db, IFirebaseCollection.TRANSACTION);
       let filters = [];
+
+      // Obtenha o userId do contexto ou autenticação
+      const currentUserId = currentUser?._id; // Substitua pelo valor correto (ex.: do contexto de autenticação)
+
+      // Adicionar filtro para o userId
+      filters.push(where("userId", "==", currentUserId));
 
       // Adicionar filtros dinamicamente
       if (data.categoria) {
@@ -90,6 +99,46 @@ export default function Filter({ onClose, onFilter }: FilterProps) {
       console.error("Erro ao filtrar transações:", error);
     }
   };
+
+  //   const onSubmit = async (data: IFilterForm) => {
+  //     try {
+  //       const transactionsRef = collection(db, IFirebaseCollection.TRANSACTION);
+  //       let filters = [];
+
+  //       // Adicionar filtros dinamicamente
+  //       if (data.categoria) {
+  //         filters.push(where("categoryId", "==", data.categoria));
+  //       }
+  //       if (data.metodoPagamento) {
+  //         filters.push(where("paymentId", "==", data.metodoPagamento));
+  //       }
+  //       if (data.dataInicio) {
+  //         filters.push(where("dataTransaction", ">=", data.dataInicio));
+  //       }
+  //       if (data.dataFim) {
+  //         filters.push(where("dataTransaction", "<=", data.dataFim));
+  //       }
+
+  //       // Criar a query com os filtros
+  //       const q = query(transactionsRef, ...filters);
+  //       const querySnapshot = await getDocs(q);
+  //       console.log("Query executada com filtros:", q);
+
+  //       // Obter os resultados filtrados
+  //       const filteredTransactions = querySnapshot.docs.map((doc) => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       })) as ITransaction[];
+
+  //       // Retornar os resultados para o callback
+  //       onFilter(filteredTransactions);
+  //       if (onClose) {
+  //         onClose(); // Fecha o Drawer após aplicar o filtro
+  //       }
+  //     } catch (error) {
+  //       console.error("Erro ao filtrar transações:", error);
+  //     }
+  //   };
 
   return (
     <View style={styles.container}>

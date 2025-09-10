@@ -141,8 +141,22 @@ export function TransactionProvider({ children }: TransactionProviderProps) {
 
   const refreshTransactions = () => {
     setLoading(true);
+
+    const currentUser = userContext?.user; // Obtém o usuário logado do contexto
+
+    if (!currentUser) {
+      setTransactions([]); // Se não houver usuário logado, limpa as transações
+      setLoading(false);
+      return;
+    }
+
     const transactionsRef = collection(db, IFirebaseCollection.TRANSACTION);
-    const q = query(transactionsRef);
+
+    // Adiciona o filtro para o userId do usuário logado
+    const q = query(
+      transactionsRef,
+      where("userId", "==", currentUser._id) // Filtra pelas transações do usuário logado
+    );
 
     onSnapshot(
       q,
@@ -152,13 +166,14 @@ export function TransactionProvider({ children }: TransactionProviderProps) {
           ...doc.data(),
         })) as ITransaction[];
 
+        // Ordena as transações por data (mais recente primeiro)
         allTransactions.sort((a, b) => {
           const dateA = new Date(a.createdAt).getTime();
           const dateB = new Date(b.createdAt).getTime();
           return dateB - dateA;
         });
 
-        setTransactions(allTransactions);
+        setTransactions(allTransactions); // Atualiza o estado com as transações filtradas
         setLoading(false);
       },
       (err) => {
