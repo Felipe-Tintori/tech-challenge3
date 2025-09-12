@@ -30,7 +30,7 @@ export const heightFormControl = {
 
 export const globalStyles = StyleSheet.create({
   card: {
-    backgroundColor: colors.card,
+    backgroundColor: "#FFF",
     padding: spacing.medium,
     gap: spacing.medium,
     borderRadius: spacing.small,

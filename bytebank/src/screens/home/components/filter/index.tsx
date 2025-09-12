@@ -20,8 +20,6 @@ import UserContext from "../../../../context/UserContext";
 interface IFilterForm {
   categoria: string;
   metodoPagamento: string;
-  dataInicio: string;
-  dataFim: string;
 }
 
 interface FilterProps {
@@ -35,8 +33,6 @@ export default function Filter({ onClose, onFilter }: FilterProps) {
     defaultValues: {
       categoria: "",
       metodoPagamento: "",
-      dataInicio: "",
-      dataFim: "",
     },
   });
 
@@ -59,86 +55,34 @@ export default function Filter({ onClose, onFilter }: FilterProps) {
       const transactionsRef = collection(db, IFirebaseCollection.TRANSACTION);
       let filters = [];
 
-      // Obtenha o userId do contexto ou autenticação
-      const currentUserId = currentUser?._id; // Substitua pelo valor correto (ex.: do contexto de autenticação)
+      const currentUserId = currentUser?._id;
 
-      // Adicionar filtro para o userId
       filters.push(where("userId", "==", currentUserId));
 
-      // Adicionar filtros dinamicamente
       if (data.categoria) {
         filters.push(where("categoryId", "==", data.categoria));
       }
       if (data.metodoPagamento) {
         filters.push(where("paymentId", "==", data.metodoPagamento));
       }
-      if (data.dataInicio) {
-        filters.push(where("dataTransaction", ">=", data.dataInicio));
-      }
-      if (data.dataFim) {
-        filters.push(where("dataTransaction", "<=", data.dataFim));
-      }
 
-      // Criar a query com os filtros
       const q = query(transactionsRef, ...filters);
       const querySnapshot = await getDocs(q);
       console.log("Query executada com filtros:", q);
 
-      // Obter os resultados filtrados
       const filteredTransactions = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as ITransaction[];
 
-      // Retornar os resultados para o callback
       onFilter(filteredTransactions);
       if (onClose) {
-        onClose(); // Fecha o Drawer após aplicar o filtro
+        onClose();
       }
     } catch (error) {
       console.error("Erro ao filtrar transações:", error);
     }
   };
-
-  //   const onSubmit = async (data: IFilterForm) => {
-  //     try {
-  //       const transactionsRef = collection(db, IFirebaseCollection.TRANSACTION);
-  //       let filters = [];
-
-  //       // Adicionar filtros dinamicamente
-  //       if (data.categoria) {
-  //         filters.push(where("categoryId", "==", data.categoria));
-  //       }
-  //       if (data.metodoPagamento) {
-  //         filters.push(where("paymentId", "==", data.metodoPagamento));
-  //       }
-  //       if (data.dataInicio) {
-  //         filters.push(where("dataTransaction", ">=", data.dataInicio));
-  //       }
-  //       if (data.dataFim) {
-  //         filters.push(where("dataTransaction", "<=", data.dataFim));
-  //       }
-
-  //       // Criar a query com os filtros
-  //       const q = query(transactionsRef, ...filters);
-  //       const querySnapshot = await getDocs(q);
-  //       console.log("Query executada com filtros:", q);
-
-  //       // Obter os resultados filtrados
-  //       const filteredTransactions = querySnapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       })) as ITransaction[];
-
-  //       // Retornar os resultados para o callback
-  //       onFilter(filteredTransactions);
-  //       if (onClose) {
-  //         onClose(); // Fecha o Drawer após aplicar o filtro
-  //       }
-  //     } catch (error) {
-  //       console.error("Erro ao filtrar transações:", error);
-  //     }
-  //   };
 
   return (
     <View style={styles.container}>
@@ -161,6 +105,7 @@ export default function Filter({ onClose, onFilter }: FilterProps) {
               name="categoria"
               label="Categoria"
               options={categoriaOptions}
+              rules={{ required: "Categoria é obrigatória" }}
             />
 
             <BytebankSelect
@@ -170,32 +115,12 @@ export default function Filter({ onClose, onFilter }: FilterProps) {
               options={metodoPagamentoOptions}
             />
 
-            <BytebankDatePicker
-              control={control}
-              name="dataInicio"
-              label="Data de Início"
-            />
-
-            <BytebankDatePicker
-              control={control}
-              name="dataFim"
-              label="Data de Fim"
-            />
-
             <Button
               mode="contained"
               onPress={handleSubmit(onSubmit)}
               style={styles.button}
             >
               Aplicar Filtro
-            </Button>
-
-            <Button
-              mode="outlined"
-              onPress={() => reset()}
-              style={styles.button}
-            >
-              Limpar Filtros
             </Button>
           </View>
         </ScrollView>

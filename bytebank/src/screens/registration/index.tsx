@@ -10,7 +10,7 @@ import Animated, {
 import BytebankInput from "../../shared/components/input";
 import BytebankButton from "../../shared/components/button";
 import styles from "./styles";
-import { globalStyles } from "../../styles/globalSltyles";
+import { colors, globalStyles } from "../../styles/globalSltyles";
 
 import { auth } from "../../services/firebaseConfig";
 import {
@@ -22,6 +22,7 @@ import BytebankSnackbar from "../../shared/components/snackBar";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Routes } from "../../interface/routes";
+import BytebankLoading from "../../shared/components/loading";
 
 interface IForm {
   email: string;
@@ -37,6 +38,8 @@ export default function Registration() {
       name: "",
     },
   });
+
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<NativeStackNavigationProp<Routes>>();
 
@@ -71,6 +74,7 @@ export default function Registration() {
   }));
 
   const onSubmit = async (data: IForm) => {
+    setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -78,9 +82,11 @@ export default function Registration() {
         data.senha
       );
       await updateProfile(userCredential.user, { displayName: data.name });
-      navigation.navigate("Login");
+      navigation.navigate("Home");
     } catch (error: any) {
       showSnackbar(error.message || "Erro ao cadastrar.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -125,7 +131,7 @@ export default function Registration() {
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text
               style={{
-                color: "#FFF",
+                color: colors.text,
                 textDecorationLine: "underline",
               }}
             >
@@ -134,11 +140,7 @@ export default function Registration() {
           </TouchableOpacity>
         </View>
       </Animated.View>
-      {/* <BytebankSnackbar
-        visible={snackbarVisible}
-        message={snackbarMessage}
-        onDismiss={() => setSnackbarVisible(false)}
-      /> */}
+      <BytebankLoading visible={loading} message="Registrando usuário..." />
     </View>
   );
 }
